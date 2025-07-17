@@ -98,7 +98,7 @@ class CourseController extends Controller
             }
         }
 
-        return response()->json($course->load('modules.lessons'), 201);
+        return redirect()->route('courses.manage');
     }
 
     /**
@@ -168,7 +168,7 @@ class CourseController extends Controller
             }
         }
 
-        return response()->json($course->load('modules.lessons'));
+        return redirect()->route('courses.manage');
     }
 
     /**
@@ -186,6 +186,6 @@ class CourseController extends Controller
 
         $course->delete();
 
-        return response()->json(['status' => 'deleted']);
+        return redirect()->route('courses.manage');
     }
 }
