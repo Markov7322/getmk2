@@ -25,7 +25,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
-    Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
 
     Route::middleware('role:admin,author')->group(function () {
         Route::get('/cabinet', [CourseController::class, 'manage'])->name('courses.manage');
@@ -38,6 +37,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/courses/{course}/edit', [CourseController::class, 'edit'])->name('courses.edit');
         Route::put('/courses/{course}', [CourseController::class, 'update'])->name('courses.update');
     });
+
+    Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
 });
 
 require __DIR__.'/auth.php';
