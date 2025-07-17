@@ -60,7 +60,7 @@ class CourseController extends Controller
             abort(403);
         }
 
-        return response()->json(['status' => 'ok']);
+        return Inertia::render('Courses/Create');
     }
 
     /**
