@@ -20,12 +20,14 @@ const embedUrl = computed(() => {
     }
     return props.src;
 });
+
+const isDirectVideo = computed(() => /\.(mp4|webm|ogg)(\?.*)?$/i.test(props.src));
 </script>
 
 <template>
     <div class="aspect-video w-full">
         <iframe
-            v-if="embedUrl !== src"
+            v-if="!isDirectVideo"
             :src="embedUrl"
             frameborder="0"
             allowfullscreen
