@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Course;
+use App\Models\Module;
+use App\Models\Lesson;
+use Illuminate\Support\Arr;
 use App\Enums\UserRole;
 
 class CourseController extends Controller
@@ -16,11 +19,11 @@ class CourseController extends Controller
         $user = $request->user();
 
         if (in_array($user->role, [UserRole::ADMIN, UserRole::MODERATOR])) {
-            $courses = Course::all();
+            $courses = Course::with('modules.lessons')->get();
         } elseif ($user->role === UserRole::AUTHOR) {
-            $courses = Course::where('user_id', $user->id)->get();
+            $courses = Course::with('modules.lessons')->where('user_id', $user->id)->get();
         } else {
-            $courses = Course::all();
+            $courses = Course::with('modules.lessons')->get();
         }
 
         return response()->json($courses);
@@ -54,11 +57,27 @@ class CourseController extends Controller
             'description' => 'nullable|string',
             'image' => 'nullable|string',
             'price' => 'required|numeric',
+            'modules' => 'array',
+            'modules.*.title' => 'required|string',
+            'modules.*.lessons' => 'array',
+            'modules.*.lessons.*.title' => 'required|string',
         ]);
 
-        $course = Course::create(array_merge($validated, ['user_id' => $user->id]));
+        $courseData = Arr::except($validated, 'modules');
+        $course = Course::create(array_merge($courseData, ['user_id' => $user->id]));
 
-        return response()->json($course, 201);
+        if (isset($validated['modules'])) {
+            foreach ($validated['modules'] as $moduleData) {
+                $module = $course->modules()->create(['title' => $moduleData['title']]);
+                if (! empty($moduleData['lessons'])) {
+                    foreach ($moduleData['lessons'] as $lessonData) {
+                        $module->lessons()->create(['title' => $lessonData['title']]);
+                    }
+                }
+            }
+        }
+
+        return response()->json($course->load('modules.lessons'), 201);
     }
 
     /**
@@ -66,7 +85,7 @@ class CourseController extends Controller
      */
     public function show(string $id)
     {
-        $course = Course::findOrFail($id);
+        $course = Course::with('modules.lessons')->findOrFail($id);
         return response()->json($course);
     }
 
@@ -106,11 +125,29 @@ class CourseController extends Controller
             'description' => 'nullable|string',
             'image' => 'nullable|string',
             'price' => 'sometimes|required|numeric',
+            'modules' => 'array',
+            'modules.*.title' => 'required|string',
+            'modules.*.lessons' => 'array',
+            'modules.*.lessons.*.title' => 'required|string',
         ]);
 
-        $course->update($validated);
+        $courseData = Arr::except($validated, 'modules');
+        $course->update($courseData);
 
-        return response()->json($course);
+        if (isset($validated['modules'])) {
+            // Reset modules and lessons
+            $course->modules()->delete();
+            foreach ($validated['modules'] as $moduleData) {
+                $module = $course->modules()->create(['title' => $moduleData['title']]);
+                if (! empty($moduleData['lessons'])) {
+                    foreach ($moduleData['lessons'] as $lessonData) {
+                        $module->lessons()->create(['title' => $lessonData['title']]);
+                    }
+                }
+            }
+        }
+
+        return response()->json($course->load('modules.lessons'));
     }
 
     /**
