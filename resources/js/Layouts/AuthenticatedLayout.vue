@@ -39,6 +39,13 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Dashboard
                                 </NavLink>
+                                <NavLink
+                                    v-if="['admin','author'].includes($page.props.auth.user.role)"
+                                    :href="route('courses.manage')"
+                                    :active="route().current('courses.manage')"
+                                >
+                                    My Courses
+                                </NavLink>
                             </div>
                         </div>
 
@@ -145,6 +152,13 @@ const showingNavigationDropdown = ref(false);
                             :active="route().current('dashboard')"
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            v-if="['admin','author'].includes($page.props.auth.user.role)"
+                            :href="route('courses.manage')"
+                            :active="route().current('courses.manage')"
+                        >
+                            My Courses
                         </ResponsiveNavLink>
                     </div>
 

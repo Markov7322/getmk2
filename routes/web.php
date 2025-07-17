@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
 
     Route::middleware('role:admin,author')->group(function () {
+        Route::get('/cabinet', [CourseController::class, 'manage'])->name('courses.manage');
         Route::get('/courses/create', [CourseController::class, 'create'])->name('courses.create');
         Route::post('/courses', [CourseController::class, 'store'])->name('courses.store');
         Route::delete('/courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
