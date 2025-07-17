@@ -8,6 +8,7 @@ import InputError from '@/Components/InputError.vue';
 
 const form = useForm({
     title: '',
+    price: 0,
     modules: [],
 });
 
@@ -45,6 +46,11 @@ function submit() {
                             <InputLabel value="Course Title" />
                             <TextInput v-model="form.title" class="mt-1 block w-full" />
                             <InputError :message="form.errors.title" class="mt-2" />
+                        </div>
+                        <div class="mb-4">
+                            <InputLabel value="Price" />
+                            <TextInput type="number" v-model="form.price" class="mt-1 block w-full" />
+                            <InputError :message="form.errors.price" class="mt-2" />
                         </div>
                         <div v-for="(module, mIndex) in form.modules" :key="mIndex" class="mb-4 border p-2">
                             <InputLabel value="Module Title" />
