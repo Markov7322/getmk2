@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import VideoPlayer from '@/Components/VideoPlayer.vue';
 
 const props = defineProps({
     course: Object,
@@ -29,8 +30,8 @@ const props = defineProps({
                             <li v-for="lesson in module.lessons" :key="lesson.id" class="mb-3">
                                 <div class="font-medium">{{ lesson.title }}</div>
                                 <p class="text-sm text-gray-600" v-if="lesson.description">{{ lesson.description }}</p>
-                                <div v-if="lesson.video_url" class="mt-1">
-                                    <a :href="lesson.video_url" target="_blank" class="text-blue-600 underline">Watch video</a>
+                                <div v-if="lesson.video_url" class="mt-3">
+                                    <VideoPlayer :src="lesson.video_url" />
                                 </div>
                                 <div v-if="lesson.pdf_path" class="mt-1">
                                     <a :href="lesson.pdf_path" target="_blank" class="text-blue-600 underline">Download PDF</a>
