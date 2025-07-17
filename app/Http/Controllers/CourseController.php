@@ -8,6 +8,7 @@ use App\Models\Module;
 use App\Models\Lesson;
 use Illuminate\Support\Arr;
 use App\Enums\UserRole;
+use Inertia\Inertia;
 
 class CourseController extends Controller
 {
@@ -27,6 +28,26 @@ class CourseController extends Controller
         }
 
         return response()->json($courses);
+    }
+
+    public function manage(Request $request)
+    {
+        $user = $request->user();
+
+        if (! in_array($user->role, [UserRole::ADMIN, UserRole::AUTHOR])) {
+            abort(403);
+        }
+
+        $query = Course::with('modules.lessons');
+        if ($user->role === UserRole::AUTHOR) {
+            $query->where('user_id', $user->id);
+        }
+
+        $courses = $query->get();
+
+        return Inertia::render('Courses/Index', [
+            'courses' => $courses,
+        ]);
     }
 
     /**
