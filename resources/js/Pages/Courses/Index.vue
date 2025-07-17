@@ -26,7 +26,9 @@ const props = defineProps({
                     </div>
                     <div v-else class="mb-6">
                         <div v-for="course in courses" :key="course.id" class="mb-4">
-                            <div class="font-bold">{{ course.title }}</div>
+                            <Link :href="route('courses.show', course.id)" class="font-bold text-blue-600 underline">
+                                {{ course.title }}
+                            </Link>
                             <ul class="ml-4 list-disc">
                                 <li v-for="module in course.modules" :key="module.id">
                                     {{ module.title }}
