@@ -13,6 +13,9 @@ class Lesson extends Model
     protected $fillable = [
         'module_id',
         'title',
+        'description',
+        'video_url',
+        'pdf_path',
     ];
 
     public function module()

@@ -13,16 +13,17 @@ const form = useForm({
 });
 
 function addModule() {
-    form.modules.push({ title: '', lessons: [] });
+    form.modules.push({ title: '', description: '', lessons: [] });
 }
 
 function addLesson(module) {
-    module.lessons.push({ title: '' });
+    module.lessons.push({ title: '', description: '', video_url: '', pdf: null });
 }
 
 function submit() {
     form.post(route('courses.store'), {
         preserveScroll: true,
+        forceFormData: true,
         onSuccess: () => form.reset(),
     });
 }
@@ -56,10 +57,22 @@ function submit() {
                             <InputLabel value="Module Title" />
                             <TextInput v-model="module.title" class="mt-1 block w-full" />
                             <InputError :message="form.errors[`modules.${mIndex}.title`]" class="mt-2" />
+                            <InputLabel value="Module Description" class="mt-2" />
+                            <textarea v-model="module.description" class="mt-1 block w-full rounded-md border-gray-300"></textarea>
+                            <InputError :message="form.errors[`modules.${mIndex}.description`]" class="mt-2" />
                             <div class="ml-4 mt-2" v-for="(lesson, lIndex) in module.lessons" :key="lIndex">
                                 <InputLabel value="Lesson Title" />
                                 <TextInput v-model="lesson.title" class="mt-1 block w-full" />
                                 <InputError :message="form.errors[`modules.${mIndex}.lessons.${lIndex}.title`]" class="mt-2" />
+                                <InputLabel value="Lesson Description" class="mt-2" />
+                                <textarea v-model="lesson.description" class="mt-1 block w-full rounded-md border-gray-300"></textarea>
+                                <InputError :message="form.errors[`modules.${mIndex}.lessons.${lIndex}.description`]" class="mt-2" />
+                                <InputLabel value="Video URL" class="mt-2" />
+                                <TextInput v-model="lesson.video_url" class="mt-1 block w-full" />
+                                <InputError :message="form.errors[`modules.${mIndex}.lessons.${lIndex}.video_url`]" class="mt-2" />
+                                <InputLabel value="PDF" class="mt-2" />
+                                <input type="file" accept="application/pdf" @change="e => lesson.pdf = e.target.files[0]" class="mt-1 block w-full" />
+                                <InputError :message="form.errors[`modules.${mIndex}.lessons.${lIndex}.pdf`]" class="mt-2" />
                             </div>
                             <PrimaryButton type="button" class="mt-2" @click="addLesson(module)">
                                 Add Lesson

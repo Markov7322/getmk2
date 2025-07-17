@@ -27,7 +27,9 @@ class CourseController extends Controller
             $courses = Course::with('modules.lessons')->get();
         }
 
-        return response()->json($courses);
+        return Inertia::render('Courses/PublicIndex', [
+            'courses' => $courses,
+        ]);
     }
 
     public function manage(Request $request)
@@ -80,8 +82,12 @@ class CourseController extends Controller
             'price' => 'required|numeric',
             'modules' => 'array',
             'modules.*.title' => 'required|string',
+            'modules.*.description' => 'nullable|string',
             'modules.*.lessons' => 'array',
             'modules.*.lessons.*.title' => 'required|string',
+            'modules.*.lessons.*.description' => 'nullable|string',
+            'modules.*.lessons.*.video_url' => 'nullable|url',
+            'modules.*.lessons.*.pdf' => 'nullable|file|mimes:pdf',
         ]);
 
         $courseData = Arr::except($validated, 'modules');
@@ -89,10 +95,22 @@ class CourseController extends Controller
 
         if (isset($validated['modules'])) {
             foreach ($validated['modules'] as $moduleData) {
-                $module = $course->modules()->create(['title' => $moduleData['title']]);
+                $module = $course->modules()->create([
+                    'title' => $moduleData['title'],
+                    'description' => $moduleData['description'] ?? null,
+                ]);
                 if (! empty($moduleData['lessons'])) {
                     foreach ($moduleData['lessons'] as $lessonData) {
-                        $module->lessons()->create(['title' => $lessonData['title']]);
+                        $pdfPath = null;
+                        if (isset($lessonData['pdf'])) {
+                            $pdfPath = $lessonData['pdf']->store('pdfs', 'public');
+                        }
+                        $module->lessons()->create([
+                            'title' => $lessonData['title'],
+                            'description' => $lessonData['description'] ?? null,
+                            'video_url' => $lessonData['video_url'] ?? null,
+                            'pdf_path' => $pdfPath,
+                        ]);
                     }
                 }
             }
@@ -107,7 +125,9 @@ class CourseController extends Controller
     public function show(string $id)
     {
         $course = Course::with('modules.lessons')->findOrFail($id);
-        return response()->json($course);
+        return Inertia::render('Courses/Show', [
+            'course' => $course,
+        ]);
     }
 
     /**
@@ -148,8 +168,12 @@ class CourseController extends Controller
             'price' => 'sometimes|required|numeric',
             'modules' => 'array',
             'modules.*.title' => 'required|string',
+            'modules.*.description' => 'nullable|string',
             'modules.*.lessons' => 'array',
             'modules.*.lessons.*.title' => 'required|string',
+            'modules.*.lessons.*.description' => 'nullable|string',
+            'modules.*.lessons.*.video_url' => 'nullable|url',
+            'modules.*.lessons.*.pdf' => 'nullable|file|mimes:pdf',
         ]);
 
         $courseData = Arr::except($validated, 'modules');
@@ -159,10 +183,22 @@ class CourseController extends Controller
             // Reset modules and lessons
             $course->modules()->delete();
             foreach ($validated['modules'] as $moduleData) {
-                $module = $course->modules()->create(['title' => $moduleData['title']]);
+                $module = $course->modules()->create([
+                    'title' => $moduleData['title'],
+                    'description' => $moduleData['description'] ?? null,
+                ]);
                 if (! empty($moduleData['lessons'])) {
                     foreach ($moduleData['lessons'] as $lessonData) {
-                        $module->lessons()->create(['title' => $lessonData['title']]);
+                        $pdfPath = null;
+                        if (isset($lessonData['pdf'])) {
+                            $pdfPath = $lessonData['pdf']->store('pdfs', 'public');
+                        }
+                        $module->lessons()->create([
+                            'title' => $lessonData['title'],
+                            'description' => $lessonData['description'] ?? null,
+                            'video_url' => $lessonData['video_url'] ?? null,
+                            'pdf_path' => $pdfPath,
+                        ]);
                     }
                 }
             }
