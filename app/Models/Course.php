@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\User;
+use App\Models\Module;
 
 class Course extends Model
 {
@@ -21,5 +22,10 @@ class Course extends Model
     public function author()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function modules()
+    {
+        return $this->hasMany(Module::class);
     }
 }
