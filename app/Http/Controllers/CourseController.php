@@ -124,7 +124,18 @@ class CourseController extends Controller
      */
     public function show(string $id)
     {
-        $course = Course::with('modules.lessons')->findOrFail($id);
+        $course = Course::with(['modules.lessons', 'students'])->findOrFail($id);
+        $user = request()->user();
+
+        $allowed = $user->role === UserRole::ADMIN
+            || $user->role === UserRole::MODERATOR
+            || ($user->role === UserRole::AUTHOR && $course->user_id == $user->id)
+            || $course->students->contains($user->id);
+
+        if (! $allowed) {
+            abort(403);
+        }
+
         return Inertia::render('Courses/Show', [
             'course' => $course,
         ]);
