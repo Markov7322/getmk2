@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\StudentCourseController;
 use App\Http\Controllers\CourseEnrollmentController;
+use App\Http\Controllers\StudentManagementController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -35,6 +36,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/courses/create', [CourseController::class, 'create'])->name('courses.create');
         Route::post('/courses', [CourseController::class, 'store'])->name('courses.store');
         Route::delete('/courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
+
+        Route::get('/students', [StudentManagementController::class, 'index'])->name('students.index');
+        Route::post('/students/{course}', [StudentManagementController::class, 'store'])->name('students.store');
 
         Route::get('/courses/{course}/students', [CourseEnrollmentController::class, 'index'])->name('courses.students.index');
         Route::post('/courses/{course}/students', [CourseEnrollmentController::class, 'store'])->name('courses.students.store');
