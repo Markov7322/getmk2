@@ -20,24 +20,40 @@ const props = defineProps({
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="overflow-hidden bg-white p-6 shadow-sm sm:rounded-lg">
-                    <p class="mb-6" v-if="course.description">{{ course.description }}</p>
+                <div class="overflow-hidden bg-white p-6 shadow-sm sm:rounded-lg flex">
+                    <!-- Sidebar -->
+                    <aside class="w-64 pr-6 border-r">
+                        <h3 class="mb-4 text-xl font-bold">{{ course.title }}</h3>
+                        <div v-for="module in course.modules" :key="module.id" class="mb-4">
+                            <div class="font-semibold">{{ module.title }}</div>
+                            <ul class="ml-4 list-disc">
+                                <li v-for="lesson in module.lessons" :key="lesson.id" class="text-sm">
+                                    {{ lesson.title }}
+                                </li>
+                            </ul>
+                        </div>
+                    </aside>
 
-                    <div v-for="module in course.modules" :key="module.id" class="mb-6">
-                        <h3 class="text-lg font-bold">{{ module.title }}</h3>
-                        <p class="mb-2 text-gray-600" v-if="module.description">{{ module.description }}</p>
-                        <ul class="ml-4 list-disc">
-                            <li v-for="lesson in module.lessons" :key="lesson.id" class="mb-3">
-                                <div class="font-medium">{{ lesson.title }}</div>
-                                <p class="text-sm text-gray-600" v-if="lesson.description">{{ lesson.description }}</p>
-                                <div v-if="lesson.video_url" class="mt-3">
-                                    <VideoPlayer :src="lesson.video_url" />
-                                </div>
-                                <div v-if="lesson.pdf_path" class="mt-1">
-                                    <a :href="lesson.pdf_path" target="_blank" class="text-blue-600 underline">Download PDF</a>
-                                </div>
-                            </li>
-                        </ul>
+                    <!-- Main content -->
+                    <div class="flex-1 pl-6">
+                        <p class="mb-6" v-if="course.description">{{ course.description }}</p>
+
+                        <div v-for="module in course.modules" :key="module.id" class="mb-6">
+                            <h3 class="text-lg font-bold">{{ module.title }}</h3>
+                            <p class="mb-2 text-gray-600" v-if="module.description">{{ module.description }}</p>
+                            <ul class="ml-4 list-disc">
+                                <li v-for="lesson in module.lessons" :key="lesson.id" class="mb-3">
+                                    <div class="font-medium">{{ lesson.title }}</div>
+                                    <p class="text-sm text-gray-600" v-if="lesson.description">{{ lesson.description }}</p>
+                                    <div v-if="lesson.video_url" class="mt-3">
+                                        <VideoPlayer :src="lesson.video_url" />
+                                    </div>
+                                    <div v-if="lesson.pdf_path" class="mt-1">
+                                        <a :href="lesson.pdf_path" target="_blank" class="text-blue-600 underline">Download PDF</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
